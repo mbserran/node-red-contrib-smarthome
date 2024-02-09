@@ -1,0 +1,278 @@
+<script type="text/x-red" data-help-name="google-device">
+    <p>A Google Smart Home Device.</p>
+
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">object | string | boolean</span>
+            </dt>
+            <dd>Changes to apply to the device status (and send to Google Smart Home).</dd>
+        </dl>
+
+     <h3>Output</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">object | string | boolean</span>
+            </dt>
+            <dd>The status of the device after executing a command received from Google Smart Home.</dd>
+        </dl>
+
+    <h3>Device Types</h3>
+    <dl class="message-properties">
+        <p>See the <a target="_blank" href="https://developers.google.com/assistant/smarthome/guides">online documentation</a>
+            for more information on Smart Home Device Types.</p>
+    </dl>
+
+    <h3>Device Traits</h3>
+    <dl class="message-properties">
+        <p>See the <a target="_blank" href="https://developers.google.com/assistant/smarthome/traits">online documentation</a>
+            for more information on Smart Home Device Traits.</p>
+    </dl>
+
+    <h3>Details</h3>
+        <h4>Node Properties - Google SmartHome Settings</h4>
+        <p><code>SmartHome</code> Configuration node.</p>
+        <p><code>Name</code> Name used by Google Smart Home.</p>
+        <p><code>Nicknames</code> Comma separated list of additional names for the device. Optional.</p>
+        <h4>Node Properties - Node-RED Settings</h4>
+        <p><code>Topic</code> Topic used by this node when sending updates from Google Smart Home.</p>
+        <p><code>Room hint</code> Room of the device. Optional, can be changed in the app.</p>
+
+        <p><code>Device Type</code> The device type. See the <a target="_blank" href="https://developers.google.com/assistant/smarthome/guides">online documentation</a>
+            for more information on Smart Home Device Types</p>
+
+        <p><code>Filter incoming messages by topic</code> If enabled, incoming messages will managed only if the message topic starts with the node topic.</p>
+
+        <p><code>Pass Through</code> If enabled, incoming messages will be passed onto the output. Be careful with this setting.</p>
+
+        <p><code>Persistent state</code> If enabled, the updated state will be included in the set_state message.</p>
+
+        <p><code>Show trait</code> Choose to show the selected, recommended or all traits.</p>
+
+        <p><code>Online</code> The initial online state.</p>
+
+        <p><code>Advanced settings</code> Shows the advanced settings. Don't modify them unless You know what you are doing.</p>
+
+        <h4>Input Message</h4>
+        <p>If the <code>msg.topic</code> is one of the device states name the <code>msg.payload</code> must be the new value telling the new state of the device.</p>
+        <p>If the <code>msg.topic</code> doesn't match any of the device state's name the <code>msg.payload</code> must be an object with the new status of the device where every property must match a device state name telling the new state of the device.</p>
+
+        <p>E.g: if the <code>msg.topic</code> is <code>on</code> then the <code>msg.payload</code> must be boolean telling the new state of the device.</p>
+        <dl class="message-properties">
+            <dt>
+                {
+                    "topic": "on",
+                    "payload": true
+                }
+            </dt>
+        </dl>
+        <dd><code>true</code> sets device to on, <code>false</code> sets device to off.</dd>
+
+        <p/>
+        <p>E.g: if the <code>msg.topic</code> is <code>color</code> then the <code>msg.payload</code> must be an object telling the new color of the device light.</p>
+        <dl class="message-properties">
+            <dt>
+                {
+                    "topic": "color",
+                    "payload": {
+                        "temperatureK": 2000
+                    }
+                }
+            </dt>
+        </dl>
+        <dd><code>2000</code> sets the device light to warm white.</dd>
+
+        <p/>
+        <p>It is possible to set both status using the following payload:</p>
+        <dl class="message-properties">
+            <dt>
+                {
+                    "topic": "",
+                    "payload": {
+                        "on": true,
+                        "color": { 
+                            "temperatureK": 2000 
+                        }
+                    }
+                }
+            </dt>
+        </dl>
+
+        <p/>
+        <p>The following topic values are special treatments:</p>
+
+        <p>If <code>msg.topic</code> is <code>AvailableApplications</code> and the <code>msg.payload</code> is a string or a json object, the applications list is saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the applications to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableApplications</code> and the <code>msg.payload</code> is not defined, the applications list is loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the applications from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableChannels</code> and the <code>msg.payload</code> is a string or a json object, the available channel are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the channels to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableChannels</code> and the <code>msg.payload</code> is not defined, the available channel are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the channels from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>SupportedDispenseItems</code> and the <code>msg.payload</code> is a string or a json object, the supported dispense items are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the Supported Dispense Items to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>SupportedDispenseItems</code> and the <code>msg.payload</code> is not defined, the supported dispense items are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the Supported Dispense Items from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>SupportedDispensePresets</code> and the <code>msg.payload</code> is a string or a json object, the supported dispense presets are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the Supported Dispense Items to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>SupportedDispensePresets</code> and the <code>msg.payload</code> is not defined, the supported dispense presets are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the Supported Dispense Items from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableFanSpeeds</code> and the <code>msg.payload</code> is a string or a json object, the available fan speeds are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the fan speeds to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableFanSpeeds</code> and the <code>msg.payload</code> is not defined, the available fan speeds are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the fan speeds from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableFillLevels</code> and the <code>msg.payload</code> is a string or a json object, the available fill levels are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the fill levels to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableFillLevels</code> and the <code>msg.payload</code> is not defined, the available fill levels are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the fill levels from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableFoodPresets</code> and the <code>msg.payload</code> is a string or a json object, the available food presets are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the food presets to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableFoodPresets</code> and the <code>msg.payload</code> is not defined, the available food presets are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the food presets from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableInputs</code> and the <code>msg.payload</code> is a string or a json object, the available inputs are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the inputs to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableInputs</code> and the <code>msg.payload</code> is not defined, the available inputs are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the inputs from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableModes</code> and the <code>msg.payload</code> is a string or a json object, the available modes are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the modes to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableModes</code> and the <code>msg.payload</code> is not defined, the available modes are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the modes from the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableToggles</code> and the <code>msg.payload</code> is a string or a json object, the available toggles are saved to the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string | json</span>
+            </dt>
+            <dd>Save the traits to the file.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>AvailableToggles</code> and the <code>msg.payload</code> is not defined, the available toggles are loaded from the file.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">undefined</span>
+            </dt>
+            <dd>Load the toggles from the file.</dd>
+        </dl>
+
+        <p><b>Note 1:</b> <code>msg.topic</code> does not have to be exactly as shown above. You can use <code>/</code> as
+        a delimiter and as long as the last part of the topic matches one of the described topics all is good.
+        For example, <code>a/msg/topic/online</code> will be broken down into multiple parts and only the last part, 
+        <code>online</code>, will be tested for a match.</p>
+        <p><b>Note 2:</b> If you set the online state to <code>false</code> then Google Smart Home is not going to be 
+        able to control the device.</p>
+
+        <h4>Output Messages</h4>
+        <p>Unless <code>Pass Through</code> is enabled, these messages are emitted when Google Smart Home wants to control the device.</p>
+
+    <h3>References</h3>
+        <p><a href="https://developers.google.com/assistant/smarthome/guides" target="_new">Smart Home Device Types</a>.</p>
+        <p><a href="https://developers.google.com/assistant/smarthome/traits" target="_new">Smart Home Device Traits</a>.</p>
+        <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
+</script>

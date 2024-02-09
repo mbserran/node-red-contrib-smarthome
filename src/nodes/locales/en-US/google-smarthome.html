@@ -1,0 +1,155 @@
+<!--
+ node-red-contrib-google-smarthome
+ Copyright (C) 2024 Michael Jacobsen and others.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<script type="text/x-red" data-help-name="googlesmarthome-client">
+    <code>Name</code>: A name for the node.<br>
+    <code>Enable Node Debug</code>: If enabled, debugging information will be logged to Node-RED's log.<br>
+    <code>Default language</code>: The language of your project.<br>
+    <br>
+    <b>Local Authentication</b><br>
+    <code>Use Google login</code>: If enabled, use Google Sign-In to link your account in the Google Home App. See
+            <a href="https://github.com/mikejac/node-red-contrib-google-smarthome/blob/master/docs/google_signin.md"
+            target="_blank">the docs</a> for more information.<br>
+    <code>Login Client ID</code>: If Google Login is enabled, the client ID you gained from the *Google Sign-In* integration.<br>
+    <code>Authorized emails</code>: If Google Login is enabled, The email addresses authorized to log in.<br>
+    <code>Username</code> and <code>Password</code>: If Google Login is disabled, a username and password to use when
+            you link your account in the Google Home App.<br>
+    <br>
+    <b>Actions on Google Project Settings</b><br>
+    <code>Client ID</code>: The client id you entered in the <i>Actions on Google</i> project.<br>
+    <code>Client Secret</code>: The client secret you entered in the <i>Actions on Google</i> project.<br>
+    <br>
+    <b>Google HomeGraph Settings</b><br>
+    <code>Jwt Key</code>: Path to the JSON file you downloaded during setup. Can be an absolute path or a path relative
+          to Node-REDs user dir (where your settings.js, flows.json etc. are stored).<br>
+    <br>
+    <b>Web Server Settings</b><br>
+    <code>Port</code>: TCP port of your choice for incoming connections from Google. Must match what you entered in the <i>Actions on Google</i> project. If empty, it will use the same port as Node-RED.<br>
+    <code>URL subpath</code>: URL subpath to add to the URL. If set, the URL will change from `https://example.com:3001/check` to
+          `https://example.com:3001/<subpath>/check` (resp. `/<subpath>/smarthome`, `/<subpath>/oauth`, `/<subpath>/token`).<br>
+    <code>Use http Node-RED root path</code>: If enabled, use the same http root path prefix configured for Node-RED. Otherwise, no prefix will be used.<br>
+    <code>Use external SSL offload</code>: If enabled, the smarthome service will use HTTP instead of HTTPS. Check if you want to do SSL termination on a reverse proxy.
+    <code>Public Key</code>: Path to the file containing the public SSL key, e.g. `fullchain.pem` from Let's Encrypt. Can be an absolute path or a path relative to Node-REDs user dir (where your settings.js, flows.json etc. are stored).<br>
+    <code>Private Key</code>: Path to the file containing the private SSL key, e.g. `privkey.pem` from Let's Encrypt. Can be an absolute path or a path relative to Node-REDs user dir (where your settings.js, flows.json etc. are stored).<br>
+    <br>
+    <b>Local fulfillment</b><br>
+    <code>Scan Type</code>: The discovery protocol to use. Must match the configuration in the <i>Actions on Google</i> project.<br>
+    <code>Discovery Port</code>: A port number for UDP or mDNS. For UDP, it must match the "Broadcast Port" in the Google configuration.<br>
+    <code>HTTP port</code>: A port number to use for local fulfillment. If empty, it will use the same port as Node-RED.
+                            If you use Node-RED's built-in HTTPS encryption or you have a httpAdminRoot set, you need to
+                            set a port. Don't create a forwarding rule for this port!
+    <b>Advanced Settings</b><br>
+    <code>Access Token Duration</code>: The authorization token duration (in minutes) used by Google SmartHome to identify itself to node-red SmartHome plugin. Defaults is 60 min.<br>
+    <code>Report Interval (m)</code>: Time, in minutes, between report updates are sent to Google. Default is 60 min.<br>
+    <code>Request sync delay (s)</code>: Delay, in seconds, for request devices sync after a deploy, 0 or empty to disable (default value 0).<br>
+    <code>Set state delay (s)</code>: Delay, in seconds, for sending the set_state message after state changes, 0 or empty to disable (default value 0).<br>
+
+    <h3>References</h3>
+    <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
+</script>
+
+<!--
+    Management Interface
+-->
+<script type="text/x-red" data-help-name="google-mgmt">
+    <p>Allows to manage the Google Smart Home service.</p>
+
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>topic
+                <span class="property-type">string</span>
+            </dt>
+            <dd>Command to run. Can be restart_server, report_state, request_sync, get_state or set_state.</dd>
+        </dl>
+
+     <h3>Output</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">object</span>
+            </dt>
+            <dd>Debug messages from Google Smart Home service or the state of all Google Devices (with set_state or get_state topic).</dd>
+        </dl>
+
+    <h3>Details</h3>
+        <h4>Node Properties - Google SmartHome Settings</h4>
+        <p><code>SmartHome</code> Configuration node.</p>
+        <h4>Node Properties - Node-RED Settings</h4>
+        <p><code>Name</code> Name used by Google Smart Home.</p>
+
+        <h4>Input Messages</h4>
+        <p>If <code>msg.topic</code> is <code>restart_server</code> the built-in webserver will be restarted. Can be used when your SSL certificate has been renewed and needs to be re-read by the webserver.</p>
+        <dl class="message-properties">
+            <dt>topic
+                <span class="property-type">string</span>
+            </dt>
+            <dd>A topic of <code>restart_server</code> restarts the built-in webserver. <code>msg.payload</code> is not used for anything.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>report_state</code> an update of all device states will be sent to Google. Mostly useful for debugging.</p>
+        <dl class="message-properties">
+            <dt>topic
+                <span class="property-type">string</span>
+            </dt>
+            <dd>A topic of <code>report_state</code> will send an update of all states to Google. <code>msg.payload</code> is not used for anything.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>request_sync</code> Google is requested to sync to learn about new or changed devices. This usually happens automatically.</p>
+        <dl class="message-properties">
+            <dt>topic
+                <span class="property-type">string</span>
+            </dt>
+            <dd>A topic of <code>request_sync</code> requests Google to sync to learn about new or changed devices. <code>msg.payload</code> is not used for anything.</dd>
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>get_state</code> or <code>getstate</code> the node send a message in output with the state of the Google devices.</p>
+        <dl class="message-properties">
+            <dt>topic
+                <span class="property-type">string</span>
+            </dt>
+            <dd>A topic of <code>get_state</code> requests to send to the output the state of the Google devices.</dd>
+            <dl class="message-properties">
+                <dt>payload
+                    <span class="property-type">boolean|string|array of string|object</span>
+                </dt>
+                <dd><code>undefined</code> sends to the output the state of all Google devices in an object with key the devices id or name according to the node configuration.</dd>
+                <dd><code>true</code> sends to the output the state of all Google devices with the "Persistent State" enabled in an object with key the devices id or name according to the node configuration.</dd>
+                <dd><code>string</code> sends to the output the state of the Google device with the id or the name specified in the payload in an object with key the device id or name according to the node configuration.</dd>
+                <dd><code>array of strings</code> sends to the output the state of the Google devices with the ids or names specified in the payload in an object with key the device id or name according to the node configuration.</dd>
+                <dd><code>object</code> the object attributes can be <code>onlyPersistent</code>, <code>useNames</code> or <code>devices</code>, sends to the output the state of the Google devices in according to the payload and to the node configuration.</dd>
+            </dl>    
+        </dl>
+
+        <p>If <code>msg.topic</code> is <code>set_state</code> or <code>setstate</code> the node updates the Google devices states with the states contained on the <code>msg.payload</code>.</p>
+        <dl class="message-properties">
+            <dt>topic
+                <span class="property-type">object</span>
+            </dt>
+            <dd>A topic of <code>set_state</code> updates the Google devices states with the value of the <code>msg.payload</code>.</dd>
+        </dl>
+
+        <h4>Output Messages</h4>
+        <p>This node will output debug messages if something goes wrong or the state of all Google Devices (with set_state or get_state topic).</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string|object</span>
+            </dt>
+            <dd>This node will output debug messages if something goes wrong or the state of all Google Devices (with set_state or get_state topic).</dd>
+        </dl>
+
+        <p>If a device state changes, the node output a message with the <code>msg.topic</code> set to <code>set_state</code>, and the <code>msg.payload</code> contains all the Google devices states that can be persisted if needed. This message can be passed into the node to restore the persisted state.</p>
+</script>
